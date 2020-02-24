@@ -1,0 +1,44 @@
+<resources>
+    <string name="app_name">Charity Care</string>
+    <string name="radiodonor">Donor</string>
+    <string name="radiodisabled">Disabled</string>
+
+    <string name="radiomale">Male</string>
+    <string name="radiofemale">Female</string>
+    <string name="radioother">Other</string>
+
+
+    <string name="radioaccident">Accident</string>
+    <string name="radioabirth">By Birth</string>
+    <string name="radioillness">Illness</string>
+
+
+    <string name="radiosingle">Single</string>
+    <string name="radiomarried">Married</string>
+
+
+    <string name="radiomedical">Medical</string>
+    <string name="radiotraining">Training/Vacation</string>
+    <string name="radiospecify">Other</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_donor">Charity Care</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_logout">Logout</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_posts">Posts</string>
+    <string name="menu_messages">Slideshow</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_send">Send</string>
+    <string name="title_activity_disable_home">DisableHomeActivity</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="action_disablelogout">Logout</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="menu_tools">Tools</string>
+
+
+</resources>
