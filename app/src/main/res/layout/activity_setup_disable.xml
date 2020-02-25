@@ -19,7 +19,6 @@
         app:cardElevation="5dp"
         android:background="@drawable/button"
         app:cardCornerRadius="8dp">
-        >
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -90,7 +89,7 @@
                 android:hint="please enter the name"
                 android:inputType="textPersonName"
                 android:background="@drawable/input_field"
-                android:padding="10dp"
+                android:padding="15dp"
                 android:layout_margin="10dp"/>
 
             <TextView
@@ -108,25 +107,9 @@
                 android:hint="father, mother,sibling...."
                 android:inputType="textPersonName"
                 android:background="@drawable/input_field"
-                android:padding="10dp"
+                android:padding="15dp"
                 android:layout_margin="10dp"/>
 
-        </LinearLayout>
-
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        app:cardElevation="5dp"
-        android:background="@drawable/button"
-        app:cardCornerRadius="8dp">
-        >
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
             <TextView
                 android:id="@+id/demographicInformation"
                 android:layout_width="wrap_content"
@@ -139,19 +122,21 @@
                 android:textStyle="italic"/>
 
 
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+
                 android:text="Sex"
                 android:textSize="18sp"
-                android:layout_marginLeft="10dp"
-                />
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="15dp" />
             <RadioGroup
                 android:id="@+id/group_gender"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginLeft="8dp">
 
                 <RadioButton
                     android:id="@+id/radio_male"
@@ -181,14 +166,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Marital Status"
+                android:layout_marginTop="8dp"
                 android:textSize="18sp"
-                android:layout_marginLeft="10dp"/>
+                android:layout_marginLeft="15dp"
+                android:layout_marginStart="15dp" />
 
             <RadioGroup
                 android:id="@+id/group_status"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginLeft="8dp">
 
                 <RadioButton
                     android:id="@+id/radio_single"
@@ -207,10 +195,10 @@
 
             </RadioGroup>
 
+
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
-
 
 
     <com.google.android.material.card.MaterialCardView
@@ -220,11 +208,11 @@
         app:cardElevation="5dp"
         android:background="@drawable/button"
         app:cardCornerRadius="8dp">
-        >
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="10dp">
 
 
             <TextView
@@ -232,6 +220,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Disability Information"
+                android:layout_marginTop="8dp"
                 android:textColor="@color/colorRed"
                 android:textAlignment="center"
                 android:layout_gravity="center"
@@ -259,9 +248,9 @@
                 <RadioButton
                     android:id="@+id/radio_accident"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:onClick="MajorCourseButtonClicked"
-                    android:text="@string/radioaccident"/>
+                    android:text="@string/radioaccident" />
 
                 <RadioButton
                     android:id="@+id/radio_birth"
@@ -284,6 +273,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Type of help needed"
+                android:layout_marginTop="8dp"
                 android:textSize="18sp"
                 android:layout_marginLeft="10dp"/>
             <RadioGroup
@@ -321,6 +311,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Amount needed"
+                android:layout_marginTop="8dp"
                 android:textSize="18sp"
                 android:layout_marginLeft="10dp"/>
 
@@ -333,24 +324,6 @@
                 android:padding="15dp"
                 android:layout_margin="10dp"
                 android:inputType="number"/>
-
-        </LinearLayout>
-
-    </com.google.android.material.card.MaterialCardView>
-
-
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        app:cardElevation="5dp"
-        android:background="@drawable/button"
-        app:cardCornerRadius="8dp">
-        >
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/supporting_document"
@@ -367,12 +340,9 @@
                 android:id="@+id/medical_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
                 android:background="@drawable/input"
-                android:padding="10dp"
                 android:textSize="18dp"
+                android:padding="8dp"
                 android:textAllCaps="false"
                 android:layout_marginTop="24dp"
                 android:layout_gravity="center"
@@ -400,12 +370,9 @@
                 android:id="@+id/certificate_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
                 android:background="@drawable/input"
-                android:padding="10dp"
                 android:textSize="18dp"
+                android:padding="8dp"
                 android:textAllCaps="false"
                 android:layout_marginTop="24dp"
                 android:layout_gravity="center"
@@ -428,46 +395,23 @@
                 />
 
 
+
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>
 
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
+
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_save"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        app:cardElevation="5dp"
-        android:background="@drawable/button"
-        app:cardCornerRadius="8dp">
-        >
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <Button
-                android:id="@+id/save_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                android:background="@drawable/input"
-                android:padding="10dp"
-                android:textSize="18dp"
-                android:textAllCaps="false"
-                android:layout_marginTop="24dp"
-                android:layout_gravity="center"
-                android:textColor="@android:color/white"
-                android:text="Save"
-                />
-
-
-        </LinearLayout>
-
-    </com.google.android.material.card.MaterialCardView>
-
-
+        android:layout_margin="@dimen/fab_margin"
+        android:layout_gravity="bottom|end"
+        android:textColor="@android:color/white"
+        android:src="@drawable/ic_save"
+        />
 
 </LinearLayout>
 

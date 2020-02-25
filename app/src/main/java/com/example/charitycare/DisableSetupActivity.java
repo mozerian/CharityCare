@@ -23,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -45,7 +46,7 @@ public class DisableSetupActivity extends AppCompatActivity /*implements RadioGr
 
 
 
-    private Button SaveInformation;
+    private FloatingActionButton SaveInformation;
     private String userType;
 
     private FirebaseAuth mAuth;
@@ -90,7 +91,7 @@ public class DisableSetupActivity extends AppCompatActivity /*implements RadioGr
         medicalButton = findViewById(R.id.medical_button);
         certificateBtton = findViewById(R.id.certificate_button);
 
-        SaveInformation = findViewById(R.id.save_button);
+        SaveInformation = findViewById(R.id.fab_save);
 
         loadingBar = new ProgressDialog(this);
 

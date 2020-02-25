@@ -9,7 +9,7 @@
     </solid>
 
     <stroke
-        android:color="@color/colorAccent"
+        android:color="@color/deepBlue"
         android:width="1dp"/>
 
     <corners
