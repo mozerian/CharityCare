@@ -1,19 +1,24 @@
 package com.example.charitycare;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,16 +29,21 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.HashMap;;
+import java.util.HashMap;
 
-    public class DisableSetupActivity extends AppCompatActivity /*implements RadioGroup.OnCheckedChangeListener*/{
-        private EditText fullnames, phonenumber, nextofkin, relationship, amount;
-        private RadioGroup gender, status, course, help;
+;
+
+public class DisableSetupActivity extends AppCompatActivity /*implements RadioGroup.OnCheckedChangeListener*/ {
+    private EditText fullnames, phonenumber, nextofkin, relationship, amount;
+    private RadioGroup gender, status, course, help;
     private RadioButton male, female, othersex, single, married, accident, birth, illness, medical, training, specify;
+    private TextView medicalText, birthText;
+    private Button medicalButton, certificateBtton;
+    final static int MEDICAL_CERT = 1;
+    final static int BIRTH_CERT = 2;
+    private final static String STORAGE_PERMISSION = Manifest.permission.READ_EXTERNAL_STORAGE;
 
-    private Button medicalButton,certificateBtton;
-    final static int medicalcert = 1;
-        final static int birthcert = 1;
+
 
     private Button SaveInformation;
     private String userType;
@@ -44,11 +54,13 @@ import java.util.HashMap;;
 
     private ProgressDialog loadingBar;
 
+    private String medicalName, birthName;
+
     String currentUserID;
-        String userGender = "";
-        String majorCourse = "";
-        String kindOfHelp = "";
-        String maritaStatus = "";
+    String userGender = "";
+    String majorCourse = "";
+    String kindOfHelp = "";
+    String maritaStatus = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +78,8 @@ import java.util.HashMap;;
         phonenumber = findViewById(R.id.edit_phonenumber);
         nextofkin = findViewById(R.id.edit_nextofKin);
         relationship = findViewById(R.id.edit_relationshipNextKin);
+        birthText = findViewById(R.id.Selected_Birth_Record);
+        medicalText = findViewById(R.id.Selected_Medical_Record);
         amount = findViewById(R.id.edit_amount);
 
         gender = findViewById(R.id.group_gender);
@@ -83,28 +97,26 @@ import java.util.HashMap;;
 
         medicalButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
-                Intent galleryIntent = new Intent();
-                galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
-                galleryIntent.setType("image/*");
-                startActivityForResult(galleryIntent,medicalcert);
+            public void onClick(View v) {
+                Intent mediaIntent = new Intent();
+                mediaIntent.setAction(Intent.ACTION_GET_CONTENT);
+                mediaIntent.setType("*/*");
+                mediaIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                startActivityForResult(Intent.createChooser(mediaIntent,"Select a medical file to upload"), MEDICAL_CERT);
 
             }
         });
         certificateBtton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
-                Intent galleryIntent = new Intent();
-                galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
-                galleryIntent.setType("image/*");
-                startActivityForResult(galleryIntent,birthcert);
+            public void onClick(View v) {
+                Intent certIntent = new Intent();
+                certIntent.setAction(Intent.ACTION_GET_CONTENT);
+                certIntent.setType("*/*");
+                certIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                startActivityForResult(Intent.createChooser(certIntent,"Select a medical file to upload"), BIRTH_CERT);
 
             }
         });
-
-
 
 
 
@@ -116,121 +128,113 @@ import java.util.HashMap;;
             }
         });
 
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == MEDICAL_CERT && resultCode == RESULT_OK && data !=null)
+        {
+            Uri uri = data.getData();
+            medicalName = getNameFromUri(uri);
+            medicalText.setVisibility(View.VISIBLE);
+            medicalText.setText("You have selected " +medicalName);
+
+        }
+        if (requestCode == BIRTH_CERT && resultCode == RESULT_OK && data !=null)
+        {
+            Uri uri = data.getData();
+            birthName = getNameFromUri(uri);
+            birthText.setVisibility(View.VISIBLE);
+            birthText.setText("You have selected " +birthName);
+
+        }
+    }
+
+
+    public void MaritalStatusButtonClicked(View view) {
+
+
+        boolean checked = ((RadioButton) view).isChecked();
+
+        switch (view.getId()) {
+            case R.id.radio_single:
+                if (checked)
+                    maritaStatus = "Single";
+                break;
+            case R.id.radio_married:
+                if (checked)
+                    maritaStatus = "Married";
+                break;
+
+        }
+    }
+
+    public void GenderButtonClicked(View view) {
+
+
+        boolean checked = ((RadioButton) view).isChecked();
+
+        switch (view.getId()) {
+            case R.id.radio_female:
+                if (checked)
+                    userGender = "female";
+                break;
+            case R.id.radio_male:
+                if (checked)
+                    userGender = "male";
+                break;
+            case R.id.radio_other:
+                if (checked)
+                    userGender = "other";
+                break;
+
+        }
+    }
+
+    public void MajorCourseButtonClicked(View view) {
+
+        boolean checked = ((RadioButton) view).isChecked();
+
+        switch (view.getId()) {
+            case R.id.radio_accident:
+                if (checked)
+                    majorCourse = "Accident";
+                break;
+            case R.id.radio_birth:
+                if (checked)
+                    majorCourse = "Birth";
+                break;
+            case R.id.radio_illness:
+                if (checked)
+                    majorCourse = "Illness";
+                break;
+        }
 
     }
 
-        @Override
-        protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
-        {
-            super.onActivityResult(requestCode, resultCode, data);
+    public void kindofHelpButtonClicked(View view) {
 
-            if (requestCode == medicalcert && resultCode == RESULT_OK && data !=null)
-            {
-                Uri imageUri = data.getData();
-                if (requestCode == RESULT_OK)
-                {
-                    //Uri resultUri = resu
-                }
-            }
-            if (requestCode == birthcert && resultCode == RESULT_OK && data !=null)
-            {
-                Uri image2Uri = data.getData();
+        boolean checked = ((RadioButton) view).isChecked();
 
-            }
-            StorageReference filepath = provestorage.child(currentUserID + ".jpg");
-           // filepath.putFile()
-
+        switch (view.getId()) {
+            case R.id.radio_medical:
+                if (checked)
+                    kindOfHelp = "Medical";
+                break;
+            case R.id.radio_male:
+                if (checked)
+                    kindOfHelp = "Training";
+                break;
+            case R.id.radio_other:
+                if (checked)
+                    kindOfHelp = "Other";
+                break;
         }
+    }
 
-
-
-
-        public void MaritalStatusButtonClicked(View view)
-  {
-
-
-      boolean checked = ((RadioButton) view).isChecked();
-
-      switch (view.getId())
-      {
-          case R.id.radio_single:
-          if (checked)
-              maritaStatus ="Single";
-          break;
-          case R.id.radio_married:
-              if (checked)
-                  maritaStatus ="Married";
-              break;
-
-      }
-  }
-        public void GenderButtonClicked(View view)
-        {
-
-
-            boolean checked = ((RadioButton) view).isChecked();
-
-            switch (view.getId())
-            {
-                case R.id.radio_female:
-                    if (checked)
-                        userGender ="female";
-                    break;
-                case R.id.radio_male:
-                    if (checked)
-                        userGender ="male";
-                    break;
-                case R.id.radio_other:
-                    if (checked)
-                        userGender ="other";
-                    break;
-
-            }
-        }
-
-        public void  MajorCourseButtonClicked(View view)
-  {
-
-      boolean checked = ((RadioButton) view).isChecked();
-
-      switch (view.getId())
-      {
-          case R.id.radio_accident:
-              if (checked)
-                  majorCourse ="Accident";
-              break;
-          case R.id.radio_birth:
-              if (checked)
-                  majorCourse ="Birth";
-              break;
-          case R.id.radio_illness:
-              if (checked)
-                  majorCourse ="Illness";
-              break;
-      }
-
-  }
-        public void kindofHelpButtonClicked(View view)
-        {
-
-            boolean checked = ((RadioButton) view).isChecked();
-
-            switch (view.getId())
-            {
-                case R.id.radio_medical:
-                    if (checked)
-                        kindOfHelp ="Medical";
-                    break;
-                case R.id.radio_male:
-                    if (checked)
-                        kindOfHelp ="Training";
-                    break;
-                case R.id.radio_other:
-                    if (checked)
-                        kindOfHelp ="Other";
-                    break;
-            }
-        }
     private void SaveAccountInformation() {
         String FullNames = fullnames.getText().toString().trim();
         String PhoneNumber = phonenumber.getText().toString().trim();
@@ -242,40 +246,42 @@ import java.util.HashMap;;
             Toast.makeText(this, "Please Provide Your Full Names...", Toast.LENGTH_SHORT).show();
 
         }
-        if (TextUtils.isEmpty(PhoneNumber)) {
+       else  if (TextUtils.isEmpty(PhoneNumber)) {
             Toast.makeText(this, "Please Provide Your Phone number...", Toast.LENGTH_SHORT).show();
 
         }
-        if (TextUtils.isEmpty(NextofKin)) {
+       else if (TextUtils.isEmpty(NextofKin)) {
             Toast.makeText(this, "Please Provide the Name of your Next of Kin...", Toast.LENGTH_SHORT).show();
 
         }
-        if (TextUtils.isEmpty(Relationship)) {
+       else if (TextUtils.isEmpty(Relationship)) {
             Toast.makeText(this, "please provide the relationship status with your next of kin...", Toast.LENGTH_SHORT).show();
 
         }
-        if (gender.getCheckedRadioButtonId() == -1)
-        {
+        else if (gender.getCheckedRadioButtonId() == -1) {
             Toast.makeText(this, "Please select Sex...", Toast.LENGTH_SHORT).show();
         }
-        if (status.getCheckedRadioButtonId() == -1)
-        {
+        else if (status.getCheckedRadioButtonId() == -1) {
             Toast.makeText(this, "Please select Marital status...", Toast.LENGTH_SHORT).show();
         }
-        if (course.getCheckedRadioButtonId() == -1)
-        {
+        else if (course.getCheckedRadioButtonId() == -1) {
             Toast.makeText(this, "Please select Your course of disability...", Toast.LENGTH_SHORT).show();
         }
-        if (help.getCheckedRadioButtonId() == -1)
-        {
+        else if (help.getCheckedRadioButtonId() == -1) {
             Toast.makeText(this, "Please select kind of help you need...", Toast.LENGTH_SHORT).show();
         }
-        if (TextUtils.isEmpty(Amount)) {
+        else if (TextUtils.isEmpty(Amount)) {
             Toast.makeText(this, "Please provide the amount in need of...", Toast.LENGTH_SHORT).show();
 
         }
+        else if (TextUtils.isEmpty(medicalName)) {
+            Toast.makeText(this, "Please upload a medical file...", Toast.LENGTH_SHORT).show();
 
+        }
+        else if (TextUtils.isEmpty(birthName)) {
+            Toast.makeText(this, "Please upload a Birth certificate...", Toast.LENGTH_SHORT).show();
 
+        }
         else {
             loadingBar.setTitle("Saving Information");
             loadingBar.setMessage("Please wait, while we are finalizing your setup account");
@@ -290,10 +296,12 @@ import java.util.HashMap;;
             userMap.put("Relationship", Relationship);
             userMap.put("amount", Amount);
             userMap.put("Disable", userType);
-            userMap.put("Gender",userGender);
-            userMap.put("MaritalStatus",maritaStatus);
-            userMap.put("Course",majorCourse);
-            userMap.put("Help",kindOfHelp);
+            userMap.put("Gender", userGender);
+            userMap.put("MaritalStatus", maritaStatus);
+            userMap.put("Course", majorCourse);
+            userMap.put("Help", kindOfHelp);
+            userMap.put("medicalFile",medicalName);
+            userMap.put("birthFile",birthName);
 
             UsersRef.updateChildren(userMap).addOnCompleteListener(new OnCompleteListener() {
                 @Override
@@ -315,10 +323,59 @@ import java.util.HashMap;;
         }
 
     }
+
     private void SendUserToDisableHomeActivity() {
         Intent disablehomeintent = new Intent(DisableSetupActivity.this, DisableHomeActivity.class);
         disablehomeintent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(disablehomeintent);
 
     }
+
+    private boolean hasPermission()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        {
+            return checkSelfPermission(STORAGE_PERMISSION) == PackageManager.PERMISSION_GRANTED;
+        }
+        else
+        {
+            return true;
+        }
+    }
+    private  void requestPermission()
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        {
+            if (shouldShowRequestPermissionRationale(STORAGE_PERMISSION))
+            {
+                Toast.makeText(getApplicationContext(),"The app requires permisiion to read external storage",Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                requestPermissions(new String[] {STORAGE_PERMISSION},100);
+            }
+        }
+    }
+    private String getNameFromUri(Uri uri){
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
+    }
+
 }

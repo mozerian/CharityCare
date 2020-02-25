@@ -244,7 +244,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Major Course"
+                android:text="Cause of disability"
                 android:textSize="18sp"
                 android:layout_marginLeft="10dp"/>
 
@@ -283,7 +283,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Kind Of Help In need"
+                android:text="Type of help needed"
                 android:textSize="18sp"
                 android:layout_marginLeft="10dp"/>
             <RadioGroup
@@ -320,7 +320,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Finance Approximation"
+                android:text="Amount needed"
                 android:textSize="18sp"
                 android:layout_marginLeft="10dp"/>
 
@@ -380,6 +380,21 @@
                 android:text="upload image of medical report"
                 />
 
+            <TextView
+                android:id="@+id/Selected_Medical_Record"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:visibility="gone"
+                android:padding="5dp"
+                android:textSize="18sp"
+                android:textAllCaps="false"
+                android:layout_marginTop="8dp"
+                android:layout_gravity="center"
+                />
+
 
             <Button
                 android:id="@+id/certificate_button"
@@ -396,6 +411,20 @@
                 android:layout_gravity="center"
                 android:textColor="@android:color/white"
                 android:text="upload image of Birth certificate"
+                />
+            <TextView
+                android:id="@+id/Selected_Birth_Record"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:visibility="gone"
+                android:padding="5dp"
+                android:textSize="18sp"
+                android:textAllCaps="false"
+                android:layout_marginTop="8dp"
+                android:layout_gravity="center"
                 />
 
 
