@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".activities.MainActivity">
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:layout_centerInParent="true"
+        app:cardElevation="5dp"
+        android:background="@drawable/button"
+        app:cardCornerRadius="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="20dp">
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginLeft="8dp"
+                    android:text="Charity Care"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorRed"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_below="@id/logo"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="-20dp"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginRight="24dp"
+                    android:background="@color/colorPrimaryDark" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/logo"
+                    android:elevation="5dp"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="60dp"
+                    android:layout_toEndOf="@+id/title"
+                    android:layout_toRightOf="@+id/title"
+                    android:src="@mipmap/ic_launcher" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/welcome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Please provide the payment information"
+                android:textAlignment="center"
+                android:layout_gravity="center"
+                android:layout_marginBottom="20dp"
+                android:textSize="20sp"
+                android:textStyle="italic"/>
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:gravity="start"
+                android:padding="2dp"
+                android:text="Username"
+                android:textAlignment="textStart"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+              <LinearLayout
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="vertical">
+
+                  <TextView
+                      android:id="@+id/description"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:padding="5dp"
+                      android:text="Amount the in need."
+                      android:textSize="18sp"
+                       />
+                  <TextView
+                      android:id="@+id/amount"
+                      android:layout_width="wrap_content"
+                      android:layout_height="wrap_content"
+                      android:layout_alignParentRight="true"
+                      android:layout_marginRight="10dp"
+                      android:padding="5dp"
+                      android:text="Amount"
+                      android:textColor="@color/colorRed"
+                      />
+
+                  <TextView
+                      android:id="@+id/donorDescription"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:padding="5dp"
+                      android:text="Amount Willing to contribute"
+                      android:textSize="18sp"
+                      />
+                  <EditText
+                      android:id="@+id/edit_amount"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:hint="Ksh."
+                      android:background="@drawable/input_field"
+                      android:padding="15dp"
+                      android:layout_margin="10dp"
+                      android:textColor="@color/colorRed"
+                      android:inputType="number"/>
+              </LinearLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/btn_Mpesa"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="Pay via M-Pesa"
+                    android:layout_margin="8dp"
+                    android:padding="4dp"
+                    android:textColor="#4A9736"
+                    android:textAllCaps="false"
+                    android:background="@drawable/button_pay"
+                    android:layout_marginBottom="10dp"
+                    />
+                <Button
+
+                    android:id="@+id/btn_Paypal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="Pay via Paypal"
+                    android:layout_margin="8dp"
+                    android:layout_alignParentEnd="true"
+                    android:textColor="@color/colorPrimary"
+                    android:textAllCaps="false"
+                    android:background="@drawable/button_pay"
+                    android:padding="4dp"
+                    android:layout_marginBottom="10dp"
+                    />
+            </RelativeLayout>
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+</RelativeLayout>

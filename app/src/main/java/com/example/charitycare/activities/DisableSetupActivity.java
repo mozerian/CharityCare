@@ -1,4 +1,4 @@
-package com.example.charitycare;
+package com.example.charitycare.activities;
 
 import android.Manifest;
 import android.app.ProgressDialog;
@@ -21,6 +21,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.charitycare.R;
+import com.example.charitycare.data.UserType;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -225,11 +227,11 @@ public class DisableSetupActivity extends AppCompatActivity /*implements RadioGr
                 if (checked)
                     kindOfHelp = "Medical";
                 break;
-            case R.id.radio_male:
+            case R.id.radio_training:
                 if (checked)
                     kindOfHelp = "Training";
                 break;
-            case R.id.radio_other:
+            case R.id.radio_specify:
                 if (checked)
                     kindOfHelp = "Other";
                 break;

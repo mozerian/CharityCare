@@ -1,4 +1,4 @@
-package com.example.charitycare;
+package com.example.charitycare.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -12,11 +12,16 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.charitycare.HomeActivity;
+import com.example.charitycare.R;
+import com.example.charitycare.data.UserType;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -26,7 +31,9 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressDialog loadingBar;
     private String userType;
     private FirebaseAuth mAuth;
+    private DatabaseReference userRef;
 
+     String currentUseriD;
 
 
     @Override
@@ -41,7 +48,10 @@ public class LoginActivity extends AppCompatActivity {
         password = findViewById(R.id.editpassword);
         loadingBar= new  ProgressDialog(this);
 
-        userType = UserType.getUserType(this);
+        userRef = FirebaseDatabase.getInstance().getReference().child("Disabled");
+
+
+      userType = UserType.getUserType(this);
 
 
         loginbtn.setOnClickListener(new View.OnClickListener() {
@@ -58,10 +68,11 @@ public class LoginActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        final FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if(currentUser != null)
         {
+
             if(userType.equals("donor"))
             {
                 SendUserToHomeActivity();
@@ -73,7 +84,6 @@ public class LoginActivity extends AppCompatActivity {
             }
 
         }
-
 
 
 
@@ -117,8 +127,10 @@ public class LoginActivity extends AppCompatActivity {
                                     SendUserToHomeActivity();
 
                                     Toast.makeText(LoginActivity.this, "you are logged in successfully", Toast.LENGTH_SHORT).show();
+
                                 }
                                 else{
+
                                     SendUserToDisableHomeActivity();
                                     Toast.makeText(LoginActivity.this, "you are logged in successfully", Toast.LENGTH_SHORT).show();
                                 }

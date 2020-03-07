@@ -1,4 +1,4 @@
-package com.example.charitycare;
+package com.example.charitycare.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +9,7 @@ import android.widget.RadioButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.charitycare.R;
 import com.google.android.material.snackbar.Snackbar;
 
 public class SelectActivity extends AppCompatActivity
