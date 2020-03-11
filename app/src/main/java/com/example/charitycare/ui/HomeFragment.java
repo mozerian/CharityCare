@@ -150,6 +150,7 @@ public class HomeFragment extends Fragment {
   /*  private void displayAllDisabledPosts()
     {
         //reccryler adapter
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
                 new FirebaseRecyclerOptions.Builder<Posts>()
         Query query =PostRef.child("Disabled");
         FirebaseRecyclerOptions<Posts> options =
@@ -213,6 +214,7 @@ public class HomeFragment extends Fragment {
             TextView HelpCategory = (TextView) mView.findViewById(R.id.category);
             HelpCategory.setText(help);
         }
+       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }*/
 
     @Override
