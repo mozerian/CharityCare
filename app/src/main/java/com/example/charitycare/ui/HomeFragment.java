@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.charitycare.R;
 import com.example.charitycare.activities.PaymentActivity;
+import com.example.charitycare.data.Help;
 import com.example.charitycare.data.Posts;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -24,32 +26,44 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
+import java.util.Objects;
+
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
+
 public class HomeFragment extends Fragment {
 
     private DatabaseReference PostRef;
     private RecyclerView postRecyclerView;
     private FirebaseRecyclerAdapter adapter;
 
-    String username,amount;
+    String username,amount,phonumber;
+    LinearLayout card;
+    private ViewHolder vHolder;
+    LinearLayoutManager linearLayoutManager;
+    Help help;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
+        help = new Help(Objects.requireNonNull(getActivity()));
+
 
         postRecyclerView = root.findViewById(R.id.post_recyclerview);
         postRecyclerView.setHasFixedSize(true);
 
         PostRef = FirebaseDatabase.getInstance().getReference();
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setReverseLayout(true);
         linearLayoutManager.setStackFromEnd(true);
+
+
+
 
         postRecyclerView.setLayoutManager(linearLayoutManager);
 
         fetch();
-
 
         //displayAllDisabledPosts();
 
@@ -69,7 +83,6 @@ public class HomeFragment extends Fragment {
                                 snapshot.child("Help").getValue().toString(),
                                 "KSH." + snapshot.child("amount").getValue().toString(),
                                 snapshot.child("phonenumber").getValue().toString());
-
                     }
                 }).build();
 
@@ -79,12 +92,30 @@ public class HomeFragment extends Fragment {
 
                 username = posts.getFullnames();
                 amount = posts.getAmount();
+                phonumber = posts.getPhonenumber();
+
 
 
                 viewHolder.setFullnames(username);
                 viewHolder.setAmount(amount);
+                viewHolder.setPhonenumber(phonumber);
                 viewHolder.setCategory(posts.getHelp());
-                viewHolder.setPhonenumber(posts.getPhonenumber());
+                //viewHolder.setPhonenumber(posts.getPhonenumber());
+                if (getActivity() != null && !help.getIntroDonate()) {
+                    MaterialTapTargetPrompt.Builder mttp = new MaterialTapTargetPrompt.Builder(getActivity());
+                    mttp.setTarget(viewHolder.txtDonate)
+                            .setPrimaryText("Payment")
+                            .setSecondaryText("Tap here to open Payment Activity")
+                            .show();
+                    mttp.setPromptStateChangeListener((prompt, state) -> {
+                        if(state == MaterialTapTargetPrompt.STATE_DISMISSED
+                        || state ==  MaterialTapTargetPrompt.STATE_FOCAL_PRESSED){
+                            new Help(getActivity()).setIntroDonate(true);
+                            startActivity(new Intent(getActivity(), PaymentActivity.class));
+                        }
+                    });
+                }
+
             }
 
             @NonNull
@@ -115,12 +146,10 @@ public class HomeFragment extends Fragment {
             txtDonate = itemView.findViewById(R.id.donate);
 
             txtDonate.setOnClickListener(this);
-
         }
 
         public void setFullnames(String fullnames) {
             txtUsername.setText(fullnames);
-
         }
 
         public void setAmount(String amount) {
@@ -142,10 +171,24 @@ public class HomeFragment extends Fragment {
             Intent paymentIntent = new Intent(getActivity(), PaymentActivity.class);
             paymentIntent.putExtra("username", txtUsername.getText().toString());
             paymentIntent.putExtra("amount", txtAmount.getText().toString());
+            paymentIntent.putExtra("phone",txtPhone.getText().toString());
             startActivity(paymentIntent);
 
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   /*  private void displayAllDisabledPosts()
     {

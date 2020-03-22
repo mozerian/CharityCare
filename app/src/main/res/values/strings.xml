@@ -38,6 +38,19 @@
     <string name="menu_gallery">Gallery</string>
     <string name="menu_tools">Settings</string>
     <string name="reports">Reports</string>
+    <string name="visual_start_guide">Visual Start Guide</string>
+    <string name="open_visual_start_guide">Open Visual Start Guide</string>
+    <string name="blue_circle">Please, remember to click inside the blue circle</string>
+    <string name="step_1">Step 1</string>
+    <string name="grant_permissions">Permission</string>
+    <string name="step_2">Step 2</string>
+    <string name="start_guide">Step 3</string>
+    <string name="step_3">Step 3</string>
+    <string name="take_photo">four</string>
+    <string name="step_4">Step 4</string>
+    <string name="click_drop_down">Payment</string>
+    <string name="step_5">Step 5</string>
+    <string name="browse_image">Step 5</string>
 
 
 </resources>

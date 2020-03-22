@@ -16,6 +16,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.charitycare.activities.DonorSetupActivity;
 import com.example.charitycare.activities.LoginActivity;
+import com.example.charitycare.data.Help;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,6 +31,7 @@ public class HomeActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference UserRef;
 //create variables
+    private  Help help;
     private AppBarConfiguration mAppBarConfiguration;
 
     @Override
@@ -55,6 +57,9 @@ public class HomeActivity extends AppCompatActivity {
         //declarations
         mAuth = FirebaseAuth.getInstance();
         UserRef = FirebaseDatabase.getInstance().getReference().child("Donor");
+
+        help = new Help(this);
+        help.setFirstRun();
 
 
 

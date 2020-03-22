@@ -194,6 +194,6 @@ public class LoginActivity extends AppCompatActivity {
 
     public void RegisteActivity(View view)
     {
-        startActivity(new Intent(view.getContext(), RegisterActivity.class));
+        startActivity(new Intent(view.getContext(), SelectActivity.class));
     }
 }
