@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <Button
+            android:id="@+id/button_disable_report"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/button"
+            android:onClick="checkPermissions"
+            android:padding="8dp"
+            android:text="@string/disabled_users_report"
+            android:textAllCaps="false"
+            style="?android:buttonBarButtonStyle"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/button_payment_report"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/button"
+            android:padding="8dp"
+            android:text="@string/payment_report"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            style="?android:buttonBarButtonStyle"
+            android:onClick="previewPaymentReport"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/fragment_placeholder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/linear_layout">
+    </FrameLayout>
+
+</RelativeLayout>

@@ -1,18 +1,27 @@
 package com.example.charitycare.Admin;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.charitycare.R;
 import com.example.charitycare.data.DisabledUsers;
+import com.example.charitycare.ui.DisableReportFragment;
+import com.example.charitycare.ui.PaymentFragment;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -37,7 +46,6 @@ import com.itextpdf.text.pdf.PdfWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +57,19 @@ public class AdminHomeActivity extends AppCompatActivity {
     private FirebaseRecyclerAdapter adapter;
 
     String phoneNumber, amount, disabiliType, fullName,help, currentUserId;
+    //private DisabledUsers disabledUsers;
+    List<DisabledUsers> disabledUserList;
+    public static String[] PERMISSIONS = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+    public static int PERMISSION_ALL = 12;
+    public static File mFile;
+
+    private Button btnDisableReport, btnPaymentReport;
+    private FrameLayout pdfViewer;
+    private File file;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,11 +84,20 @@ public class AdminHomeActivity extends AppCompatActivity {
         UserRef = FirebaseDatabase.getInstance().getReference().child("Admins");
         PostRef = FirebaseDatabase.getInstance().getReference().child("Disabled");
 
-        try {
-            createPdf(fetch());
-        } catch (DocumentException | FileNotFoundException e) {
-            e.printStackTrace();
+        disabledUserList = new ArrayList<>();
+
+        file = new File("/storage/emulated/0/Charity/");
+        if(!file.exists()) {
+            file.mkdirs();
         }
+
+        mFile = new File(file, "DisabledUsers.pdf");
+
+        fetch();
+
+        //pdfViewer = findViewById(R.id.frame_layout);
+
+
 
     }
 
@@ -96,29 +126,27 @@ public class AdminHomeActivity extends AppCompatActivity {
         finish();
     }
 
-    private List<DisabledUsers> fetch() {
-
-        List<DisabledUsers> disabledUserList = new ArrayList<>();
+    private void fetch(){
 
         PostRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                //if(dataSnapshot.exists()){
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    fullName = snapshot.child("fullnames").getValue().toString();
-                    amount = snapshot.child("amount").getValue().toString();
-                    phoneNumber = snapshot.child("phonenumber").getValue().toString();
-                    disabiliType = snapshot.child("Course").getValue().toString();
-                    help = snapshot.child("Help").getValue().toString();
 
-                    DisabledUsers disabledUsers = new DisabledUsers(
-                            phoneNumber,
-                            amount,
-                            disabiliType,
-                            fullName,
-                            help
-                    );
-                    disabledUserList.add(disabledUsers);
+                    DisabledUsers user = new DisabledUsers();
+                    user.setFullnames(snapshot.child("fullnames").getValue().toString());
+                    user.setAmount(snapshot.child("amount").getValue().toString());
+                    user.setHelp(snapshot.child("Help").getValue().toString());
+                    user.setPhoneNumber(snapshot.child("phonenumber").getValue().toString());
+                    user.setCourse(snapshot.child("Course").getValue().toString());
+
+                    disabledUserList.add(user);
+                }
+
+                try {
+                    createPdf(mFile, disabledUserList);
+                } catch (DocumentException | FileNotFoundException e) {
+                    e.printStackTrace();
                 }
 
             }
@@ -128,70 +156,76 @@ public class AdminHomeActivity extends AppCompatActivity {
 
             }
         });
-
-        Toast.makeText(AdminHomeActivity.this, fullName, Toast.LENGTH_LONG).show();
-
-        return disabledUserList;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Toast.makeText(AdminHomeActivity.this, String.valueOf(fetch().size()), Toast.LENGTH_LONG).show();
     }
 
-    public void createPdf(List<DisabledUsers> disabledUsersList) throws DocumentException, FileNotFoundException {
+    public void checkPermissions(View view){
+
+        if(hasPermissions(this, PERMISSIONS)){
+            setDisableFragment();
+            Toast.makeText(view.getContext(), "DisabledUsers.pdf saved to " + file.toString(), Toast.LENGTH_LONG).show();
+        } else {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
+        }
+    }
+    public void createPdf(File mFile, List<DisabledUsers> disabledUsersList) throws DocumentException, FileNotFoundException {
         BaseColor lightGray = WebColors.getRGBColor("#606D80");
-        BaseColor colorGreen = WebColors.getRGBColor("#1AA260");
+        BaseColor colorWhite = WebColors.getRGBColor("#ffffff");
+        BaseColor colorBlue = WebColors.getRGBColor("#056FAA");
         BaseColor grayColor = WebColors.getRGBColor("#425066");
 
-        String Root = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "Charity";
-        File myFile = new File(Root);
 
-        if(!myFile.exists())
-            myFile.mkdir();
-        File file = new File(myFile,"DisabledUsers.pdf");
-
-        OutputStream output = new FileOutputStream(file);
+        Font white = new Font(Font.FontFamily.HELVETICA, 15.0f, Font.BOLD, colorWhite);
+        FileOutputStream output = new FileOutputStream(mFile);
         Document document = new Document(PageSize.A4);
-        PdfPTable table = new PdfPTable(new float[]{6, 10, 15, 25, 40, 10});
+        PdfPTable table = new PdfPTable(new float[]{6, 25, 20, 20, 20, 20});
         table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
         table.getDefaultCell().setFixedHeight(50);
         table.setTotalWidth(PageSize.A4.getWidth());
         table.setWidthPercentage(100);
         table.getDefaultCell().setVerticalAlignment(Element.ALIGN_MIDDLE);
 
-        Chunk suggText = new Chunk("Suggested Solution");
-        PdfPCell suggCell = new PdfPCell(new Phrase(suggText));
-        suggCell.setFixedHeight(50);
-        suggCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        suggCell.setVerticalAlignment(Element.ALIGN_CENTER);
-
-        Chunk noText = new Chunk("No.");
+        Chunk noText = new Chunk("No.", white);
         PdfPCell noCell = new PdfPCell(new Phrase(noText));
         noCell.setFixedHeight(50);
         noCell.setHorizontalAlignment(Element.ALIGN_CENTER);
         noCell.setVerticalAlignment(Element.ALIGN_CENTER);
 
-        Chunk dateText = new Chunk("Date");
-        PdfPCell dateCell = new PdfPCell(new Phrase(dateText));
-        dateCell.setFixedHeight(50);
-        dateCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        dateCell.setVerticalAlignment(Element.ALIGN_CENTER);
+        Chunk nameText = new Chunk("Name", white);
+        PdfPCell nameCell = new PdfPCell(new Phrase(nameText));
+        nameCell.setFixedHeight(50);
+        nameCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        nameCell.setVerticalAlignment(Element.ALIGN_CENTER);
 
-        Chunk defText = new Chunk("Deficiency");
-        PdfPCell defCell = new PdfPCell(new Phrase(defText));
-        defCell.setFixedHeight(50);
-        defCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        defCell.setVerticalAlignment(Element.ALIGN_CENTER);
+        Chunk phoneText = new Chunk("Phone Number", white);
+        PdfPCell phoneCell = new PdfPCell(new Phrase(phoneText));
+        phoneCell.setFixedHeight(50);
+        phoneCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        phoneCell.setVerticalAlignment(Element.ALIGN_CENTER);
 
-        Chunk diagText = new Chunk("Diagnosed");
-        PdfPCell diagCell = new PdfPCell(new Phrase(diagText));
-        diagCell.setFixedHeight(50);
-        diagCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        diagCell.setVerticalAlignment(Element.ALIGN_CENTER);
+        Chunk disText = new Chunk("Disability Type", white);
+        PdfPCell disCell = new PdfPCell(new Phrase(disText));
+        disCell.setFixedHeight(50);
+        disCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        disCell.setVerticalAlignment(Element.ALIGN_CENTER);
 
-        Chunk footerText = new Chunk("Visione Softwares - Copyright @ 2020");
+        Chunk helpText = new Chunk("Type of help", white);
+        PdfPCell helpCell = new PdfPCell(new Phrase(helpText));
+        helpCell.setFixedHeight(50);
+        helpCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        helpCell.setVerticalAlignment(Element.ALIGN_CENTER);
+
+        Chunk amountText = new Chunk("Amount Required", white);
+        PdfPCell amountCell = new PdfPCell(new Phrase(amountText));
+        amountCell.setFixedHeight(50);
+        amountCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        amountCell.setVerticalAlignment(Element.ALIGN_CENTER);
+
+        Chunk footerText = new Chunk("Charity Care - Copyright @ 2020");
         PdfPCell footCell = new PdfPCell(new Phrase(footerText));
         footCell.setFixedHeight(70);
         footCell.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -200,52 +234,88 @@ public class AdminHomeActivity extends AppCompatActivity {
 
 
         table.addCell(noCell);
-        table.addCell(dateCell);
-        table.addCell(defCell);
-        table.addCell(suggCell);
-        table.addCell(diagCell);
+        table.addCell(nameCell);
+        table.addCell(phoneCell);
+        table.addCell(disCell);
+        table.addCell(helpCell);
+        table.addCell(amountCell);
         table.setHeaderRows(1);
+
         PdfPCell[] cells = table.getRow(0).getCells();
 
 
-        for (PdfPCell cell : cells) {
-            cell.setBackgroundColor(lightGray);
+       for (PdfPCell cell : cells) {
+           cell.setBackgroundColor(grayColor);
         }
         for (int i = 0; i < disabledUsersList.size(); i++) {
             DisabledUsers def = disabledUsersList.get(i);
 
-            String id = String.valueOf(i);
+            String id = String.valueOf(i+1);
             String phone = def.getPhoneNumber();
             String amount = def.getAmount();
-            String type = def.getDisabiliType();
-            String fullname = def.getFullName();
+            String type = def.getCourse();
+            String fullname = def.getFullnames();
             String help =def.getHelp();
 
 
             table.addCell(id + ". ");
-            table.addCell(String.valueOf(phone));
-            table.addCell(String.valueOf(amount));
-            table.addCell(String.valueOf(type));
-            table.addCell(String.valueOf(fullname));
-            table.addCell(String.valueOf(help));
+            table.addCell(fullname);
+            table.addCell(phone);
+            table.addCell(type);
+            table.addCell(help);
+            table.addCell("KSH. " + amount);
 
         }
 
-        PdfPTable footTable = new PdfPTable(new float[]{6, 10, 15, 20, 25, 20});
+        PdfPTable footTable = new PdfPTable(new float[]{6, 25, 20, 20, 20, 20});
         footTable.setTotalWidth(PageSize.A4.getWidth());
         footTable.setWidthPercentage(100);
         footTable.addCell(footCell);
 
         PdfWriter.getInstance(document, output);
         document.open();
-        Font f = new Font(Font.FontFamily.HELVETICA, 30.0f, Font.BOLD, colorGreen);
+        Font f = new Font(Font.FontFamily.HELVETICA, 30.0f, Font.BOLD, colorBlue);
         Font g = new Font(Font.FontFamily.HELVETICA, 25.0f, Font.NORMAL, grayColor);
-        document.add(new Paragraph("Automated Maize Nitrogen Deficiency Detector (AMNDD) \n", f));
-        document.add(new Paragraph("Monthly Report.\n\n", g));
+        document.add(new Paragraph("Charity Care \n", f));
+        document.add(new Paragraph("Registered Disabled Users Report.\n\n", g));
         document.add(table);
         document.add(footTable);
 
         document.close();
 
+    }
+
+    public boolean hasPermissions(Context context, String... permissions){
+        if(context != null && permissions != null){
+            for(String permission: permissions){
+                if(ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED){
+                    return false;
+                }
+            }
+        }
+        return  true;
+    }
+
+    private void setDisableFragment(){
+        DisableReportFragment disableReportFragment = new DisableReportFragment();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_placeholder, disableReportFragment);
+        transaction.commit();
+    }
+
+    private void setPaymentFragment(){
+        PaymentFragment disableReportFragment = new PaymentFragment();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_placeholder, disableReportFragment);
+        transaction.commit();
+    }
+
+    public void previewPaymentReport(View view){
+        setPaymentFragment();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 }

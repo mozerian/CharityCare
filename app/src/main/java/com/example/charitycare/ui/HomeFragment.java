@@ -42,13 +42,11 @@ public class HomeFragment extends Fragment {
     LinearLayoutManager linearLayoutManager;
     Help help;
 
-
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
         help = new Help(Objects.requireNonNull(getActivity()));
-
 
         postRecyclerView = root.findViewById(R.id.post_recyclerview);
         postRecyclerView.setHasFixedSize(true);

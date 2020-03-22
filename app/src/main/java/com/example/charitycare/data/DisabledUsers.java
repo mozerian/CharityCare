@@ -2,22 +2,65 @@ package com.example.charitycare.data;
 
 public class DisabledUsers {
 
-    public String  phoneNumber,amount,disabiliType,fullName, help;
+    public String  course, disable, gender, help, maritalStatus, nextOfKin, relationship, amount, birthFile, fullnames, medicalFile, phoneNumber;
 
-    public DisabledUsers(String phoneNumber, String amount, String disabiliType, String fullName, String help) {
-        this.phoneNumber = phoneNumber;
-        this.amount = amount;
-        this.disabiliType = disabiliType;
-        this.fullName = fullName;
+    public DisabledUsers() {
+    }
+
+    public String getCourse() {
+        return course;
+    }
+
+    public void setCourse(String course) {
+        this.course = course;
+    }
+
+    public String getDisable() {
+        return disable;
+    }
+
+    public void setDisable(String disable) {
+        this.disable = disable;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getHelp() {
+        return help;
+    }
+
+    public void setHelp(String help) {
         this.help = help;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getMaritalStatus() {
+        return maritalStatus;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setMaritalStatus(String maritalStatus) {
+        this.maritalStatus = maritalStatus;
+    }
+
+    public String getNextOfKin() {
+        return nextOfKin;
+    }
+
+    public void setNextOfKin(String nextOfKin) {
+        this.nextOfKin = nextOfKin;
+    }
+
+    public String getRelationship() {
+        return relationship;
+    }
+
+    public void setRelationship(String relationship) {
+        this.relationship = relationship;
     }
 
     public String getAmount() {
@@ -28,27 +71,35 @@ public class DisabledUsers {
         this.amount = amount;
     }
 
-    public String getDisabiliType() {
-        return disabiliType;
+    public String getBirthFile() {
+        return birthFile;
     }
 
-    public void setDisabiliType(String disabiliType) {
-        this.disabiliType = disabiliType;
+    public void setBirthFile(String birthFile) {
+        this.birthFile = birthFile;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getFullnames() {
+        return fullnames;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setFullnames(String fullnames) {
+        this.fullnames = fullnames;
     }
 
-    public String getHelp() {
-        return help;
+    public String getMedicalFile() {
+        return medicalFile;
     }
 
-    public void setHelp(String help) {
-        this.help = help;
+    public void setMedicalFile(String medicalFile) {
+        this.medicalFile = medicalFile;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

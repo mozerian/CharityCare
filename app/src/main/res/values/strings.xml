@@ -51,6 +51,8 @@
     <string name="click_drop_down">Payment</string>
     <string name="step_5">Step 5</string>
     <string name="browse_image">Step 5</string>
+    <string name="payment_report">Payment Report</string>
+    <string name="disabled_users_report">Disabled Users Report</string>
 
 
 </resources>
