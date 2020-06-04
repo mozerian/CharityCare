@@ -19,7 +19,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    buildTypes.each {    it.buildConfigField 'String', 'CONSUMER_KEY',DARAJA_CONSUMER_KEY
+    buildTypes.each {
+        it.buildConfigField 'String', 'CONSUMER_KEY', DARAJA_CONSUMER_KEY
         it.buildConfigField 'String', 'CONSUMER_SECRET', DARAJA_CONSUMER_SECRET
     }
 }
@@ -84,4 +85,3 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
-

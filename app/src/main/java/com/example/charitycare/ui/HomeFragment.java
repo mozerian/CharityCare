@@ -70,6 +70,8 @@ public class HomeFragment extends Fragment {
 
     }
 
+
+
     private void fetch() {
         Query query = PostRef.child("Disabled");
         FirebaseRecyclerOptions<Posts> options = new FirebaseRecyclerOptions.Builder<Posts>()
