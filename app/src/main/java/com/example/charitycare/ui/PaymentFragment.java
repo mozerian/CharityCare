@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import com.example.charitycare.R;
 import com.github.barteksc.pdfviewer.PDFView;
 
-import static com.example.charitycare.Admin.AdminHomeActivity.mFile;
+import static com.example.charitycare.Admin.AdminHomeActivity.pFile;
 
 public class PaymentFragment extends Fragment {
 
@@ -24,14 +24,14 @@ public class PaymentFragment extends Fragment {
 
         pdfView = root.findViewById(R.id.payment_pdf_viewer);
 
-        //previewPdf();
+        previewPdf();
         return root;
     }
 
     private void previewPdf(){
 
-       pdfView.fromFile(mFile)
-                .pages(0,2,1,3,3,3)
+       pdfView.fromFile(pFile)
+                .pages(0,2,1,3)
                 .enableSwipe(true)
                 .swipeHorizontal(false)
                 .enableDoubletap(true)

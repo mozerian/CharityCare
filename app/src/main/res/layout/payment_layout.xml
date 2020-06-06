@@ -10,7 +10,7 @@
         android:textSize="18sp"
         android:textStyle="bold"
         android:layout_gravity="center_vertical"
-        android:text="Payment fragment"/>
+        />
     <com.github.barteksc.pdfviewer.PDFView
         android:id="@+id/payment_pdf_viewer"
         android:layout_width="match_parent"

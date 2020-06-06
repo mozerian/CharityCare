@@ -37,4 +37,6 @@ public class DisableReportFragment extends Fragment {
                 .defaultPage(0)
                 .load();
     }
+
+    //this (mfile) shud be in DisableReportFragment
 }

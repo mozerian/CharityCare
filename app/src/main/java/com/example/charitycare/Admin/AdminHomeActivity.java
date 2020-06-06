@@ -5,12 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,9 +18,9 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.example.charitycare.R;
 import com.example.charitycare.data.DisabledUsers;
+import com.example.charitycare.data.PaymentUsers;
 import com.example.charitycare.ui.DisableReportFragment;
 import com.example.charitycare.ui.PaymentFragment;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -54,21 +52,28 @@ public class AdminHomeActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference UserRef;
     private DatabaseReference PostRef;
-    private FirebaseRecyclerAdapter adapter;
+    private DatabaseReference payRef;
 
-    String phoneNumber, amount, disabiliType, fullName,help, currentUserId;
-    //private DisabledUsers disabledUsers;
+    String  currentUserId;
+
+    List<PaymentUsers> paymentUsersList;
+
+    //list of all permissions required
     List<DisabledUsers> disabledUserList;
     public static String[] PERMISSIONS = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
     public static int PERMISSION_ALL = 12;
+
+    //disabled user disabledUserFile
     public static File mFile;
 
-    private Button btnDisableReport, btnPaymentReport;
-    private FrameLayout pdfViewer;
-    private File file;
+    //payment user disabledUserFile
+    public static File pFile;
+
+    private File disabledUserFile;
+    private File payfile;
 
 
     @Override
@@ -83,21 +88,71 @@ public class AdminHomeActivity extends AppCompatActivity {
         currentUserId = mAuth.getUid();
         UserRef = FirebaseDatabase.getInstance().getReference().child("Admins");
         PostRef = FirebaseDatabase.getInstance().getReference().child("Disabled");
+        payRef = FirebaseDatabase.getInstance().getReference().child("payment");
+
 
         disabledUserList = new ArrayList<>();
+        paymentUsersList = new ArrayList<>();
 
-        file = new File("/storage/emulated/0/Charity/");
-        if(!file.exists()) {
-            file.mkdirs();
+        //create files in charity care folder
+        disabledUserFile = new File("/storage/emulated/0/Charity/");
+        payfile = new File("/storage/emulated/0/Charity/");
+
+        //check if they exist, if not create them(directory)
+        if (!disabledUserFile.exists() && !payfile.exists()) {
+            disabledUserFile.mkdirs();
+            payfile.mkdirs();
         }
 
-        mFile = new File(file, "DisabledUsers.pdf");
-
-        fetch();
-
-        //pdfViewer = findViewById(R.id.frame_layout);
+        mFile = new File(disabledUserFile, "DisabledUsers.pdf");
+        pFile = new File(payfile, "PaymentUsers.pdf");
 
 
+        //fetch payment and disabled users details;
+        fetchDisabledUsers();
+        fetchPaymentUsers();
+
+    }
+
+    //database sasa
+    //function to fetch payment data from the database
+    private void fetchPaymentUsers() {
+        payRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+
+                    PaymentUsers pays = new PaymentUsers();
+                    pays.setUsernamepaid(snapshot.child("UsernamePaidFor").getValue().toString());
+                    pays.setPhonenumberpaid(snapshot.child("PhoneNumberPaidFor").getValue().toString());
+                    pays.setAmountpaid(snapshot.child("AmountPaid").getValue().toString());
+
+        //this just log details fetched from db(you can use Timber for logging
+                    Log.d("Payment", "Name: " + pays.getUsernamepaid());
+                    Log.d("Payment", "Phone: " + pays.getPhonenumberpaid());
+                    Log.d("Payment", "AMount: " + pays.getAmountpaid());
+
+                    /* The error before was cause by giving incorrect data type
+                    You were adding an object of type PaymentUsers yet the arraylist expects obejct of type DisabledUsers
+                     */
+                    paymentUsersList.add(pays);
+
+
+                }
+                //create a pdf file and catch exception beacause file may not be created
+                try {
+                    createPaymentReport(pFile, paymentUsersList);
+                } catch (DocumentException | FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
     }
 
@@ -126,12 +181,13 @@ public class AdminHomeActivity extends AppCompatActivity {
         finish();
     }
 
-    private void fetch(){
+
+    private void fetchDisabledUsers() {
 
         PostRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
                     DisabledUsers user = new DisabledUsers();
                     user.setFullnames(snapshot.child("fullnames").getValue().toString());
@@ -144,7 +200,7 @@ public class AdminHomeActivity extends AppCompatActivity {
                 }
 
                 try {
-                    createPdf(mFile, disabledUserList);
+                    createDisabledUSersReport(mFile, disabledUserList);
                 } catch (DocumentException | FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -158,22 +214,10 @@ public class AdminHomeActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
 
-    public void checkPermissions(View view){
+    //responsible for original disabled users report generation
 
-        if(hasPermissions(this, PERMISSIONS)){
-            setDisableFragment();
-            Toast.makeText(view.getContext(), "DisabledUsers.pdf saved to " + file.toString(), Toast.LENGTH_LONG).show();
-        } else {
-            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
-        }
-    }
-    public void createPdf(File mFile, List<DisabledUsers> disabledUsersList) throws DocumentException, FileNotFoundException {
-        BaseColor lightGray = WebColors.getRGBColor("#606D80");
+    public void createDisabledUSersReport(File mFile, List<DisabledUsers> disabledUsersList) throws DocumentException, FileNotFoundException {
         BaseColor colorWhite = WebColors.getRGBColor("#ffffff");
         BaseColor colorBlue = WebColors.getRGBColor("#056FAA");
         BaseColor grayColor = WebColors.getRGBColor("#425066");
@@ -244,18 +288,18 @@ public class AdminHomeActivity extends AppCompatActivity {
         PdfPCell[] cells = table.getRow(0).getCells();
 
 
-       for (PdfPCell cell : cells) {
-           cell.setBackgroundColor(grayColor);
+        for (PdfPCell cell : cells) {
+            cell.setBackgroundColor(grayColor);
         }
         for (int i = 0; i < disabledUsersList.size(); i++) {
             DisabledUsers def = disabledUsersList.get(i);
 
-            String id = String.valueOf(i+1);
+            String id = String.valueOf(i + 1);
             String phone = def.getPhoneNumber();
             String amount = def.getAmount();
             String type = def.getCourse();
             String fullname = def.getFullnames();
-            String help =def.getHelp();
+            String help = def.getHelp();
 
 
             table.addCell(id + ". ");
@@ -285,37 +329,161 @@ public class AdminHomeActivity extends AppCompatActivity {
 
     }
 
-    public boolean hasPermissions(Context context, String... permissions){
-        if(context != null && permissions != null){
-            for(String permission: permissions){
-                if(ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED){
+    //responsible for generating payment report
+    public void createPaymentReport(File mFile, List<PaymentUsers> paymentUsersList) throws DocumentException, FileNotFoundException {
+        BaseColor colorWhite = WebColors.getRGBColor("#ffffff");
+        BaseColor colorBlue = WebColors.getRGBColor("#056FAA");
+        BaseColor grayColor = WebColors.getRGBColor("#425066");
+
+
+        //this is for another day
+        Font white = new Font(Font.FontFamily.HELVETICA, 15.0f, Font.BOLD, colorWhite);
+        FileOutputStream output = new FileOutputStream(mFile);
+        Document document = new Document(PageSize.A4);
+        PdfPTable table = new PdfPTable(new float[]{6, 25, 20, 20});
+        table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.getDefaultCell().setFixedHeight(50);
+        table.setTotalWidth(PageSize.A4.getWidth());
+        table.setWidthPercentage(100);
+        table.getDefaultCell().setVerticalAlignment(Element.ALIGN_MIDDLE);
+
+        Chunk noText = new Chunk("No.", white);
+        PdfPCell noCell = new PdfPCell(new Phrase(noText));
+        noCell.setFixedHeight(50);
+        noCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        noCell.setVerticalAlignment(Element.ALIGN_CENTER);
+
+        Chunk nameText = new Chunk("Name", white);
+        PdfPCell nameCell = new PdfPCell(new Phrase(nameText));
+        nameCell.setFixedHeight(50);
+        nameCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        nameCell.setVerticalAlignment(Element.ALIGN_CENTER);
+
+        Chunk phoneText = new Chunk("Phone Number", white);
+        PdfPCell phoneCell = new PdfPCell(new Phrase(phoneText));
+        phoneCell.setFixedHeight(50);
+        phoneCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        phoneCell.setVerticalAlignment(Element.ALIGN_CENTER);
+
+        Chunk amountText = new Chunk("Amount Paid", white);
+        PdfPCell amountCell = new PdfPCell(new Phrase(amountText));
+        amountCell.setFixedHeight(50);
+        amountCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        amountCell.setVerticalAlignment(Element.ALIGN_CENTER);
+
+
+        Chunk footerText = new Chunk("Charity Care - Copyright @ 2020");
+        PdfPCell footCell = new PdfPCell(new Phrase(footerText));
+        footCell.setFixedHeight(70);
+        footCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        footCell.setVerticalAlignment(Element.ALIGN_CENTER);
+        footCell.setColspan(4);
+
+
+        table.addCell(noCell);
+        table.addCell(nameCell);
+        table.addCell(phoneCell);
+        table.addCell(amountCell);
+        table.setHeaderRows(1);
+
+        PdfPCell[] cells = table.getRow(0).getCells();
+
+
+        for (PdfPCell cell : cells) {
+            cell.setBackgroundColor(grayColor);
+        }
+        for (int i = 0; i < paymentUsersList.size(); i++) {
+            PaymentUsers pay = paymentUsersList.get(i);
+
+            String id = String.valueOf(i + 1);
+            String name = pay.getUsernamepaid();
+            String amount = pay.getAmountpaid();
+            String phone = pay.getPhonenumberpaid();
+
+
+            table.addCell(id + ". ");
+            table.addCell(name);
+            table.addCell(phone);
+            table.addCell(amount);
+
+        }
+
+        PdfPTable footTable = new PdfPTable(new float[]{6, 25, 20, 20});
+        footTable.setTotalWidth(PageSize.A4.getWidth());
+        footTable.setWidthPercentage(100);
+        footTable.addCell(footCell);
+
+        PdfWriter.getInstance(document, output);
+        document.open();
+        Font f = new Font(Font.FontFamily.HELVETICA, 30.0f, Font.BOLD, colorBlue);
+        Font g = new Font(Font.FontFamily.HELVETICA, 25.0f, Font.NORMAL, grayColor);
+        document.add(new Paragraph("Charity Care \n", f));
+        document.add(new Paragraph("Payment Report.\n\n", g));
+        document.add(table);
+        document.add(footTable);
+
+        document.close();
+
+    }
+
+    //umeona vile nmechange vtu mob//yaps//ok
+
+    public boolean hasPermissions(Context context, String... permissions) {
+        if (context != null && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
                     return false;
                 }
             }
         }
-        return  true;
+        return true;
     }
 
-    private void setDisableFragment(){
+    private void setDisableFragment() {
         DisableReportFragment disableReportFragment = new DisableReportFragment();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_placeholder, disableReportFragment);
         transaction.commit();
     }
 
-    private void setPaymentFragment(){
+    private void setPaymentFragment() {
         PaymentFragment disableReportFragment = new PaymentFragment();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_placeholder, disableReportFragment);
         transaction.commit();
     }
 
-    public void previewPaymentReport(View view){
-        setPaymentFragment();
+    public void previewPaymentReport(View view) {
+        if (hasPermissions(this, PERMISSIONS)) {
+            setPaymentFragment();
+        } else {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
+        }
+
     }
+
+    public void previewDisabledUsersReport(View view) {
+        if (hasPermissions(this, PERMISSIONS)) {
+            setDisableFragment();
+        } else {
+            ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
+        }
+
+    }
+    /* There was a function call checkPermissions(),
+    that was called whenever Disabled Report button was clicked.
+    It then sets the disabled fragment after checking that the permissions have been granted. So the problem is that it wa
+    only cal setDiasbaleFragment and not PaymentFragment. So I had to create another function, previewDisabledUsersReport() for setting
+    DisabledUsefFragment and Used previewPaymentReport() for setting PaymentFragment. Both Funtions check for if permissions
+    are granted.
+     I have set their click listeners in onClick in their layout(activity_admin_home.xml).
+
+     */
 
     @Override
     protected void onStart() {
+
         super.onStart();
     }
 }
+//waah meona ako ka step kamwisho ndo kalkua nashindwa apo kwa pays
